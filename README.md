@@ -1,0 +1,1 @@
+# next-js-static-site-generation-using-api
