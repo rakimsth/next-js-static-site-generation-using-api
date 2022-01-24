@@ -1,6 +1,18 @@
 import { useState } from "react";
 import axios from "axios";
 import Editor from "../Editor";
+axios.defaults.headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Request-Headers": "*",
+  "api-key": "ewAPnOVjegDeDJT75buYtiXCrGQJbyLcDhIhATkKTLm9KdlPqhAfCfl9gyxcOXZ5",
+};
+axios.defaults.baseURL =
+  "https://data.mongodb-api.com/app/data-oyxty/endpoint/data/beta";
+const dbConfig = {
+  collection: "pages",
+  database: "pages",
+  dataSource: "Cluster0",
+};
 
 export default function Body({ data }) {
   const [content, setContent] = useState(
@@ -13,9 +25,19 @@ export default function Body({ data }) {
     }
   }
   const handleSubmit = async () => {
-    const payload = { id: data._id, content };
-    const resp = await axios.put("/api/pages", { data: payload });
-    console.log(resp.data.message);
+    const id = data._id;
+    const resp = await axios.post(
+      "/action/updateOne",
+      JSON.stringify(
+        Object.assign(dbConfig, {
+          filter: { _id: { $oid: id } },
+          update: {
+            $set: { content },
+          },
+        })
+      )
+    );
+    if (resp) console.log("Page Updated Successfully");
   };
 
   return (
